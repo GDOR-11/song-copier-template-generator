@@ -17,7 +17,7 @@ new ResizeObserver(entries => {
     }
 }).observe(canvas);
 
-export const textboxes = [new Textbox()];
+export const textboxes: Textbox[] = [];
 
 export function render() {
     space.clearScreen();

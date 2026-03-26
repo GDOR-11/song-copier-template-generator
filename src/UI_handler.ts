@@ -1,66 +1,98 @@
 import { textboxes, render } from "./renderer";
 import Textbox from "./textbox";
+import languages from "./languages.json";
 
-const default_header = document.getElementById("default-header");
-const edit_header = document.getElementById("edit-header");
+const elements: { [id: string]: HTMLElement } = {
+    "default-header": null,
+    "edit-header": null,
+    "new-textbox": null,
+    "select-all": null,
+    "delete-textbox": null,
+    "edit-textbox": null,
+    "textbox-editor-container": null,
+    "textbox-editor-input": null,
+    "textbox-editor-done": null,
+    "textbox-editor-cancel": null,
+    "increase-font": null,
+    "decrease-font": null,
+    "switch-alignment": null
+} as any as { [id: string]: HTMLElement };
+for (const id in elements) {
+    const element = document.getElementById(id);
+    if (element === null) {
+        alert("shit");
+        throw "fuck";
+    }
+    elements[id] = element;
+}
+
+(() => {
+    let language_tag = (navigator.language || navigator.languages[0] || "pt").split("-")[0];
+    if (!(language_tag in languages)) language_tag = "pt";
+    let language = languages[language_tag as keyof typeof languages];
+    for (let id in language) {
+        elements[id].textContent = language[id as keyof typeof language];
+    }
+})();
+
 export function update_header() {
     if (textboxes.every(textbox => !textbox.selected)) {
-        default_header.style.display = "flex";
-        edit_header.style.display = "none";
+        elements["default-header"].style.display = "flex";
+        elements["edit-header"].style.display = "none";
     } else {
-        default_header.style.display = "none";
-        edit_header.style.display = "flex";
+        elements["default-header"].style.display = "none";
+        elements["edit-header"].style.display = "flex";
     }
 }
 
-document.getElementById("new-textbox").addEventListener("click", () => {
+elements["new-textbox"].addEventListener("click", () => {
     textboxes.push(new Textbox());
     render();
 });
-document.getElementById("select-all").addEventListener("click", () => {
+elements["select-all"].addEventListener("click", () => {
     textboxes.forEach(textbox => textbox.selected = true);
     update_header();
     render();
 });
-document.getElementById("delete-textbox").addEventListener("click", () => {
+elements["delete-textbox"].addEventListener("click", () => {
     for (let i = textboxes.length - 1; i >= 0; i--) {
         if (textboxes[i].selected) textboxes.splice(i, 1);
     }
     update_header();
     render();
 });
-document.getElementById("edit-textbox").addEventListener("click", () => {
-    document.getElementById("textbox-editor-container").style.display = "flex";
+elements["edit-textbox"].addEventListener("click", () => {
+    elements["textbox-editor-container"].style.display = "flex";
     const selected = textboxes.filter(textbox => textbox.selected);
     if (selected.every(textbox => textbox.text === selected[0].text)) {
-        (document.getElementById("textbox-editor-input") as HTMLTextAreaElement).value = selected[0].text;
+        (elements["textbox-editor-input"] as HTMLTextAreaElement).value = selected[0].text;
     }
 });
-document.getElementById("textbox-editor-done").addEventListener("click", () => {
+elements["textbox-editor-done"].addEventListener("click", () => {
     const selected = textboxes.filter(textbox => textbox.selected);
-    const new_text = (document.getElementById("textbox-editor-input") as HTMLTextAreaElement).value;
+    const new_text = (elements["textbox-editor-input"] as HTMLTextAreaElement).value;
     selected.forEach(textbox => textbox.text = new_text);
-    document.getElementById("textbox-editor-container").style.display = "none";
-    (document.getElementById("textbox-editor-input") as HTMLTextAreaElement).value = "";
+    elements["textbox-editor-container"].style.display = "none";
+    (elements["textbox-editor-input"] as HTMLTextAreaElement).value = "";
     render();
 });
-document.getElementById("textbox-editor-cancel").addEventListener("click", () => {
-    document.getElementById("textbox-editor-container").style.display = "none";
-    (document.getElementById("textbox-editor-input") as HTMLTextAreaElement).value = "";
+elements["textbox-editor-cancel"].addEventListener("click", () => {
+    elements["textbox-editor-container"].style.display = "none";
+    (elements["textbox-editor-input"] as HTMLTextAreaElement).value = "";
 });
-document.getElementById("increase-font").addEventListener("click", () => {
+elements["increase-font"].addEventListener("click", () => {
     textboxes.forEach(textbox => {
         if (textbox.selected) textbox.font_size *= 1.05;
     });
     render();
 });
-document.getElementById("decrease-font").addEventListener("click", () => {
+elements["decrease-font"].addEventListener("click", () => {
     textboxes.forEach(textbox => {
         if (textbox.selected) textbox.font_size /= 1.05;
     });
     render();
 });
-document.getElementById("switch-alignment").addEventListener("click", () => {
+elements["switch-alignment"].addEventListener("click", () => {
     textboxes.forEach(textbox => {
         if (textbox.selected) {
             if (textbox.alignment === "left") textbox.alignment = "center";

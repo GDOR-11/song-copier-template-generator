@@ -53,6 +53,7 @@ canvas {
 }
 
 #textbox-editor-input {
+    resize: none;
     width: 45vw;
     height: 45vh;
 }

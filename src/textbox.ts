@@ -3,7 +3,7 @@ import RenderSpace from "movable-render-space";
 export default class Textbox {
     constructor(
         public selected: boolean = false,
-        public text: string = "Lorem ipsum\ndolor sit amet\nconsectetur adipiscing elit",
+        public text: string = "Lorem ipsum\ndolor sit amet",
         public position: [number, number] = [0, 0],
         public font_size: number = 5,
         public alignment: "left" | "center" | "right" = "left"
