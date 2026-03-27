@@ -5,6 +5,7 @@ import { update_header } from "./UI_handler";
 
 type Pointer = {
     start_pos: vec2;
+    start_time: number;
     target?: Textbox;
     dragging: boolean;
 };
@@ -26,6 +27,7 @@ canvas.addEventListener("pointerdown", event => {
     }
     pointers[event.pointerId] = {
         start_pos: vec2.fromValues(event.x, event.y),
+        start_time: performance.now(),
         target,
         dragging: false
     };
@@ -57,10 +59,10 @@ canvas.addEventListener("pointerup", event => {
         space.config.panning = true;
         space.config.zooming = true;
     }
-    if (pointer?.dragging) {
-        return;
+    if (pointer?.dragging) return;
+    if (!event.shiftKey && (performance.now() - pointer.start_time) < 250) {
+        textboxes.forEach(textbox => textbox.selected = false);
     }
-    if (!event.shiftKey) textboxes.forEach(textbox => textbox.selected = false);
     if (pointer.target) pointer.target.selected = !pointer.target.selected;
     update_header();
     render();
