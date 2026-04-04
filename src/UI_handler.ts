@@ -1,6 +1,8 @@
-import { textboxes, render } from "./renderer";
+import { textboxes } from "./renderer";
 import Textbox from "./textbox";
 import languages from "./languages.json";
+import { type FontId, fonts, get_font } from "./text_renderer";
+import { add_update_listener, broadcast_update } from "./update_handler";
 
 const elements: { [id: string]: HTMLElement } = {
     "default-header": null,
@@ -13,8 +15,9 @@ const elements: { [id: string]: HTMLElement } = {
     "textbox-editor-input": null,
     "textbox-editor-done": null,
     "textbox-editor-cancel": null,
-    "increase-font": null,
-    "decrease-font": null,
+    "select-font": null,
+    "increase-size": null,
+    "decrease-size": null,
     "switch-alignment": null
 } as any as { [id: string]: HTMLElement };
 for (const id in elements) {
@@ -35,6 +38,13 @@ for (const id in elements) {
     }
 })();
 
+for (let font of fonts) {
+    const option = document.createElement("option");
+    option.value = font;
+    option.textContent = get_font(font).info["font-family"];
+    elements["select-font"].appendChild(option);
+}
+
 export function update_header() {
     if (textboxes.every(textbox => !textbox.selected)) {
         elements["default-header"].style.display = "flex";
@@ -44,23 +54,20 @@ export function update_header() {
         elements["edit-header"].style.display = "flex";
     }
 }
+add_update_listener(update_header);
+
+
 
 elements["new-textbox"].addEventListener("click", () => {
     textboxes.push(new Textbox());
-    render();
+    broadcast_update();
 });
 elements["select-all"].addEventListener("click", () => {
     textboxes.forEach(textbox => textbox.selected = true);
-    update_header();
-    render();
+    broadcast_update();
 });
-elements["delete-textbox"].addEventListener("click", () => {
-    for (let i = textboxes.length - 1; i >= 0; i--) {
-        if (textboxes[i].selected) textboxes.splice(i, 1);
-    }
-    update_header();
-    render();
-});
+
+
 elements["edit-textbox"].addEventListener("click", () => {
     elements["textbox-editor-container"].style.display = "flex";
     const selected = textboxes.filter(textbox => textbox.selected);
@@ -74,24 +81,51 @@ elements["textbox-editor-done"].addEventListener("click", () => {
     selected.forEach(textbox => textbox.text = new_text);
     elements["textbox-editor-container"].style.display = "none";
     (elements["textbox-editor-input"] as HTMLTextAreaElement).value = "";
-    render();
+    broadcast_update();
 });
 elements["textbox-editor-cancel"].addEventListener("click", () => {
     elements["textbox-editor-container"].style.display = "none";
     (elements["textbox-editor-input"] as HTMLTextAreaElement).value = "";
 });
-elements["increase-font"].addEventListener("click", () => {
+
+elements["delete-textbox"].addEventListener("click", () => {
+    for (let i = textboxes.length - 1; i >= 0; i--) {
+        if (textboxes[i].selected) textboxes.splice(i, 1);
+    }
+    broadcast_update();
+});
+
+elements["increase-size"].addEventListener("click", () => {
     textboxes.forEach(textbox => {
         if (textbox.selected) textbox.font_size *= 1.05;
     });
-    render();
+    broadcast_update();
 });
-elements["decrease-font"].addEventListener("click", () => {
+elements["decrease-size"].addEventListener("click", () => {
     textboxes.forEach(textbox => {
         if (textbox.selected) textbox.font_size /= 1.05;
     });
-    render();
+    broadcast_update();
 });
+
+add_update_listener(() => {
+    const selected = textboxes.filter(textbox => textbox.selected);
+    if (selected.length === 0) return;
+    const all_same_font = selected.every(textbox => textbox.font === selected[0].font);
+    if (all_same_font) {
+        (elements["select-font"] as HTMLSelectElement).value = selected[0].font;
+    } else {
+        (elements["select-font"] as HTMLSelectElement).value = "";
+    }
+});
+elements["select-font"].addEventListener("change", () => {
+    const font = (elements["select-font"] as HTMLSelectElement).value;
+    textboxes.forEach(textbox => {
+        if (textbox.selected) textbox.font = font as FontId;
+    });
+    broadcast_update();
+});
+
 elements["switch-alignment"].addEventListener("click", () => {
     textboxes.forEach(textbox => {
         if (textbox.selected) {
@@ -100,5 +134,5 @@ elements["switch-alignment"].addEventListener("click", () => {
             else if (textbox.alignment === "right") textbox.alignment = "left";
         }
     });
-    render();
+    broadcast_update();
 });

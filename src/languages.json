@@ -4,8 +4,8 @@
         "select-all": "select all",
         "edit-textbox": "edit texbox",
         "delete-textbox": "delete textbox",
-        "increase-font": "increase font",
-        "decrease-font": "decrease font",
+        "increase-size": "increase size",
+        "decrease-size": "decrease size",
         "switch-alignment": "switch alignment",
         "textbox-editor-done": "done",
         "textbox-editor-cancel": "cancel"
@@ -15,8 +15,8 @@
         "select-all": "selecionar tudo",
         "edit-textbox": "editar caixa de texto",
         "delete-textbox": "excluir caixa de texto",
-        "increase-font": "aumentar fonte",
-        "decrease-font": "diminuir fonte",
+        "increase-size": "aumentar tamanho",
+        "decrease-size": "diminuir tamanho",
         "switch-alignment": "trocar alinhamento",
         "textbox-editor-done": "pronto",
         "textbox-editor-cancel": "cancelar"
@@ -26,8 +26,8 @@
         "select-all": "seleccionar todo",
         "edit-textbox": "editar cuadro de texto",
         "delete-textbox": "borrar cuadro de texto",
-        "increase-font": "aumentar fuente",
-        "decrease-font": "disminuir fuente",
+        "increase-size": "aumentar tamaño",
+        "decrease-size": "disminuir tamaño",
         "switch-alignment": "cambiar alineación",
         "textbox-editor-done": "listo",
         "textbox-editor-cancel": "cancelar"

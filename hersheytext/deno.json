@@ -1,0 +1,5 @@
+{
+    "imports": {
+        "hersheytext": "npm:hersheytext@^2.0.0"
+    }
+}
